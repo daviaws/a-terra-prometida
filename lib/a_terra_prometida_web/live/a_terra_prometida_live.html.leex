@@ -1,0 +1,6 @@
+<header><%= @page_title %> - <%= @version_slug %> (<%= @version %>) </header>
+<body>
+  <div phx-window-keydown="key_down" class="playground">
+  <div style="height: 100%; width: 100%; min-height: 100vh; min-width: 100vh; background-image: url('<%= @scene_path %>'); background-repeat: no-repeat;"></div>
+  <div style=" left: <%=@x%>px; top: <%=@y%>px; position: absolute; width: 22px; height: 36px; background: url('<%= @actor_sheet %>') -0px -344px; animation: <%= @state %> 4s steps(4) infinite"></div>
+</body>
