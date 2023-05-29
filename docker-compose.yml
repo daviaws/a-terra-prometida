@@ -1,0 +1,32 @@
+version: "3.8"
+services:
+  postgres:
+    image: postgres:15-alpine
+    restart: unless-stopped
+    networks:
+      - the-promised-land
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - db-data:/var/lib/postgresql/data
+  adminer:
+    image: adminer:latest
+    restart: unless-stopped
+    networks:
+      - the-promised-land
+    depends_on:
+      - postgres
+    environment:
+      ADMINER_DESIGN: dracula
+      ADMINER_DEFAULT_SERVER: postgres
+    ports:
+      - 8080:8080
+volumes:
+  db-data:
+    name: promised-land-database
+
+networks:
+  the-promised-land:
