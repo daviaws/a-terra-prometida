@@ -9,17 +9,19 @@ defmodule ATerraPrometidaWeb.ATerraPrometidaLive do
 
   @impl LiveView
   def mount(_params, _session, socket) do
-    {:ok,
-     assign(socket,
-       page_title: "A Terra Prometida",
-       version: "0.0.0",
-       version_slug: "Genesis",
-       scene_path: "images/scene.png",
-       actor_sheet: "images/naruto-sheet-alpha.png",
-       x: 800,
-       y: 600,
-       state: "move"
-     )}
+    {:ok, mount_world_state(socket)}
+  end
+
+  defp mount_world_state(socket) do
+    socket
+    |> assign(:page_title, "A Terra Prometida")
+    |> assign(:version, "0.0.0")
+    |> assign(:version_slug, "Genesis")
+    |> assign(:scene_path, "images/scene.png")
+    |> assign(:actor_sheet, "images/naruto-sheet-alpha.png")
+    |> assign(:x, 800)
+    |> assign(:y, 600)
+    |> assign(:state, "move")
   end
 
   @impl LiveView
