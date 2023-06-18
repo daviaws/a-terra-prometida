@@ -29,6 +29,12 @@ config :a_terra_prometida, ATerraPrometidaWeb.Endpoint,
     tailwind: {Tailwind, :install_and_run, [:default, ~w(--watch)]}
   ]
 
+config :porcelain, driver: Porcelain.Driver.Basic
+
+config :mux,
+  access_token_id: "please setup",
+  access_token_secret: "please setup"
+
 # ## SSL Support
 #
 # In order to use HTTPS in development, a self-signed
