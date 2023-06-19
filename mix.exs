@@ -19,7 +19,7 @@ defmodule ATerraPrometida.MixProject do
   def application do
     [
       mod: {ATerraPrometida.Application, []},
-      extra_applications: [:logger, :runtime_tools]
+      extra_applications: [:logger, :porcelain, :runtime_tools]
     ]
   end
 
@@ -41,6 +41,7 @@ defmodule ATerraPrometida.MixProject do
       {:phoenix_live_view, "~> 0.18.16"},
       {:floki, ">= 0.30.0", only: :test},
       {:phoenix_live_dashboard, "~> 0.7.2"},
+      {:phoenix_pubsub, "~> 2.1.3"},
       {:esbuild, "~> 0.7", runtime: Mix.env() == :dev},
       {:tailwind, "~> 0.2.0", runtime: Mix.env() == :dev},
       {:swoosh, "~> 1.3"},
@@ -49,7 +50,9 @@ defmodule ATerraPrometida.MixProject do
       {:telemetry_poller, "~> 1.0"},
       {:gettext, "~> 0.20"},
       {:jason, "~> 1.2"},
-      {:plug_cowboy, "~> 2.5"}
+      {:plug_cowboy, "~> 2.5"},
+      {:mux, "~> 1.8.0"},
+      {:porcelain, "~> 2.0.3"}
     ]
   end
 
