@@ -13,7 +13,14 @@ services:
       - 5432:5432
     volumes:
       - postgresql-data:/var/lib/postgresql/data
-
+  rtmp-server:
+    image: alfg/nginx-rtmp
+    ports:
+      - 1935:1935
+      - 8080:80
+    volumes:
+      - ./conf/:/opt/nginx/conf/
+      - ./data:/opt/data
 volumes:
   postgresql-data:
 

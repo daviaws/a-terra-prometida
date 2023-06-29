@@ -1,8 +1,44 @@
 <header><%= @page_title %> - <%= @version_slug %> (<%= @version %>) </header>
 <body>
   <section class="row">
-    <video phx-hook="StartCamera" id="video-canvas" controls width="100%" height="auto" muted></video>
+    <video phx-hook="StartCamera" id="video-canvas" controls width="30%" height="auto" muted></video>
   </section>
+  <section class="row">
+    <video id="playback-video" width="30%" controls autoplay>
+      <source src="http://localhost:8080/live/mystream_240p264kbs/index.m3u8" type="application/x-mpegURL">
+      Your browser does not support HLS playback.
+    </video>
+  </section>
+  <section class="row">
+  <video id="video" width="30%" controls autoplay></video>
+  <script>
+    var video = document.getElementById('video');
+    var videoSrc = 'http://localhost:8080/live/mystream_240p264kbs/index.m3u8';
+    if (Hls.isSupported()) {
+      var hls = new Hls();
+      hls.loadSource(videoSrc);
+      hls.attachMedia(video);
+    }
+    // HLS.js is not supported on platforms that do not have Media Source
+    // Extensions (MSE) enabled.
+    //
+    // When the browser has built-in HLS support (check using `canPlayType`),
+    // we can provide an HLS manifest (i.e. .m3u8 URL) directly to the video
+    // element through the `src` property. This is using the built-in support
+    // of the plain video element, without using HLS.js.
+    //
+    // Note: it would be more normal to wait on the 'canplay' event below however
+    // on Safari (where you are most likely to find built-in HLS support) the
+    // video.src URL must be on the user-driven white-list before a 'canplay'
+    // event will be emitted; the last video event that can be reliably
+    // listened-for when the URL is not on the white-list is 'loadedmetadata'.
+    else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+      video.src = videoSrc;
+    }
+  </script>
+  </section>
+
+
   <div phx-window-keydown="key_down" class="playground">
   <div style="height: 100%; width: 100%; min-height: 100vh; min-width: 100vh; background-image: url('<%= @scene_path %>'); background-repeat: no-repeat;"></div>
   <div style=" left: <%=@x%>px; top: <%=@y%>px; position: absolute; width: 22px; height: 36px; background: url('<%= @actor_sheet %>') -0px -344px; animation: <%= @state %> 4s steps(4) infinite"></div>

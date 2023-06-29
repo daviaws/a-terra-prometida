@@ -61,18 +61,9 @@ defmodule ATerraPrometidaWeb.ATerraPrometidaLive do
   end
 
   defp mount_video_stream(socket) do
-    with true <- connected?(socket),
-         {:ok, %{"stream_key" => stream_key}, _env} <-
-           Mux.Video.LiveStreams.create(Mux.client(), %{
-             playback_policy: "public",
-             new_asset_settings: %{playback_policy: "public"}
-           }) do
-      assign(socket, :porcelain_process, spawn_ffmpeg(stream_key))
-    else
-      error ->
-        Logger.warning("[#{__MODULE__}] #{inspect(error)}")
-        assign(socket, :porcelain_process, nil)
-    end
+    stream_key = "mystream"
+    socket
+    |> assign(:ffmpeg_process, spawn_ffmpeg(stream_key))
   end
 
   defp mount_world_state(socket) do
@@ -90,15 +81,15 @@ defmodule ATerraPrometidaWeb.ATerraPrometidaLive do
   defp spawn_ffmpeg(key) do
     # Copied from https://github.com/MuxLabs/wocket/blob/master/server.js
     ffmpeg_args =
-      ~w(-i - -c:v libx264 -preset veryfast -tune zerolatency -c:a aac -ar 44100 -b:a 64k -y -use_wallclock_as_timestamps 1 -async 1 -bufsize 1000 -f flv)
+      ~w(-i - -c:v libx264 -b:a 32k -b:v 100k -f flv -g 5 -r 5 -s 426x240 -preset ultrafast -profile:v baseline)
 
-    Porcelain.spawn("ffmpeg", ffmpeg_args ++ ["rtmps://global-live.mux.com/app/#{key}"])
+    Porcelain.spawn("ffmpeg", ffmpeg_args ++ ["rtmp://localhost:1935/stream/#{key}"])
   end
 
   defp ffmpeg_send_input!(socket, data) do
-    if socket.assigns.porcelain_process do
-      Logger.info("[#{__MODULE__}] streaming data to porcelain/ffmpeg/MUX rtmp server")
-      Porcelain.Process.send_input(socket.assigns.porcelain_process, Base.decode64!(data))
+    if socket.assigns.ffmpeg_process do
+      Logger.info("[#{__MODULE__}] streaming data to porcelain/ffmpeg/rtmp server")
+      Porcelain.Process.send_input(socket.assigns.ffmpeg_process, Base.decode64!(data))
     else
       Logger.warning("[#{__MODULE__}] RTMP server not configured")
     end

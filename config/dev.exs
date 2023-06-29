@@ -32,8 +32,8 @@ config :a_terra_prometida, ATerraPrometidaWeb.Endpoint,
 config :porcelain, driver: Porcelain.Driver.Basic
 
 config :mux,
-  access_token_id: "please setup",
-  access_token_secret: "please setup"
+  access_token_id: "7b3981d8-bf6e-47bf-8987-fde5d2cda751",
+  access_token_secret: "on+WJZ23Rc+w71hc0BDgaaTfiUCEUy94nM5Q3fa10LCRv5HsCpYIAwlEbhkDpTMd2pdyCSJmWap"
 
 # ## SSL Support
 #
