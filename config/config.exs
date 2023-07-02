@@ -8,7 +8,12 @@
 import Config
 
 config :app,
-  ecto_repos: [App.Repo]
+  ecto_repos: [App.Repo],
+  generators: [binary_id: true]
+
+config :app, App.Repo,
+  migration_primary_key: [type: :binary_id],
+  migration_foreign_key: [type: :binary_id]
 
 # Configures the endpoint
 config :app, AppWeb.Endpoint,
