@@ -14,6 +14,7 @@ defmodule App.Application do
       App.Repo,
       # Start the PubSub system
       {Phoenix.PubSub, name: App.PubSub},
+      AppWeb.Presence,
       # Start Finch
       {Finch, name: App.Finch},
       # Start the Endpoint (http/https)
