@@ -5,7 +5,7 @@
  * @param {{children?: (HTMLElement | undefined | null)[], className?: string} & Object<string, any> } props
  * @returns {HTMLElement}
  */
-export function createHtmlElement(type, props) {
+export default function createHtmlElement(type, props) {
   const element = document.createElement(type)
   for (const [key, value] of Object.entries(props)) {
     if (key === "className") {
