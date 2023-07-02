@@ -75,7 +75,7 @@ export default class MainScene extends Phaser.Scene {
     }
     console.log("Create Player", user)
 
-    const player = new Player(this, user)
+    const player = new Player(this, user, false)
     this.players.set(user.id, player)
 
     return player.sprite

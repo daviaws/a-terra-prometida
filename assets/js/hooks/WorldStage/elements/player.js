@@ -26,7 +26,7 @@ export default class Player {
    * @param {User} user
    * @returns
    */
-  constructor(scene, user, debug = true) {
+  constructor(scene, user, debug = false) {
     this.debugEnabled = debug
     this._scene = scene
 

@@ -22,34 +22,17 @@ defmodule AppWeb.MainLive.Index do
           class="flex-1 relative overflow-hidden"
         >
         </div>
-        <div class=" bg-violet-900 w-64 border-l border-violet-600"></div>
+        <div class=" bg-violet-900 w-64 border-l border-violet-600">
+          <.sidebar
+            current_user={@current_user}
+            online_users={@online_users}
+            offline_users={@offline_users}
+          />
+        </div>
       </div>
 
       <header class="px-4 bg-violet-900 sm:px-6 lg:px-8 border-t border-violet-600">
-        <div class="flex items-center justify-between border-b border-zinc-100 py-3 text-sm">
-          <div class="flex items-center gap-4">
-            <a href="/">
-              <img src={~p"/images/logo.svg"} width="36" />
-            </a>
-            <p class="bg-brand/5 text-brand rounded-full px-2 font-medium leading-6">
-              v<%= Application.spec(:phoenix, :vsn) %>
-            </p>
-          </div>
-          <div class="flex items-center gap-4 font-semibold leading-6 text-zinc-900">
-            <a href="https://twitter.com/elixirphoenix" class="hover:text-zinc-700">
-              @elixirphoenix
-            </a>
-            <a href="https://github.com/phoenixframework/phoenix" class="hover:text-zinc-700">
-              GitHub
-            </a>
-            <a
-              href="https://hexdocs.pm/phoenix/overview.html"
-              class="rounded-lg bg-zinc-100 px-2 py-1 hover:bg-zinc-200/80"
-            >
-              Get Started <span aria-hidden="true">&rarr;</span>
-            </a>
-          </div>
-        </div>
+        <.control_panel current_user={@current_user} />
       </header>
     </div>
     """
@@ -91,8 +74,21 @@ defmodule AppWeb.MainLive.Index do
     {:ok,
      socket
      |> assign(:current_user, current_user)
-     |> assign(:users, %{})
+     |> assign_users()
      |> handle_joins(Presence.list(@presence))}
+  end
+
+  defp assign_users(socket) do
+    user_ids = Presence.list(@presence) |> Map.keys()
+
+    users = Accounts.list_users()
+
+    online_users = Enum.filter(users, fn user -> user.id in user_ids end)
+    offline_users = Enum.filter(users, fn user -> user.id not in user_ids end)
+
+    socket
+    |> assign(:online_users, online_users)
+    |> assign(:offline_users, offline_users)
   end
 
   defp handle_joins(socket, joins) do
@@ -110,8 +106,7 @@ defmodule AppWeb.MainLive.Index do
 
   defp handle_leaves(socket, leaves) do
     Enum.reduce(leaves, socket, fn {user, _}, socket ->
-      assign(socket, :users, Map.delete(socket.assigns.users, user))
-      |> push_event("user_leave", %{user_id: user})
+      push_event(socket, "user_leave", %{user_id: user})
     end)
   end
 
@@ -120,6 +115,7 @@ defmodule AppWeb.MainLive.Index do
     {
       :noreply,
       socket
+      |> assign_users()
       |> handle_leaves(diff.leaves)
       |> handle_joins(diff.joins)
     }
@@ -215,5 +211,85 @@ defmodule AppWeb.MainLive.Index do
     )
 
     {:noreply, socket |> push_event("change_direction", direction)}
+  end
+
+  defp sidebar(assigns) do
+    ~H"""
+    <div class="h-[calc(100vh_-_56px)] grid grid-rows-[auto_minmax(88px,min-content)_minmax(0,1fr)]">
+      <div class="p-4 flex justify-between items-center">
+        <p class="text-white text-base font-semibold truncate text-ellipsis flex-1">
+          Office name
+        </p>
+        <div class="rounded-md hover:bg-slate-900/25 cursor-pointer">
+          <.icon name="hero-x-mark" class="w-6 h-6 text-white" />
+        </div>
+      </div>
+
+      <div class="space-y-4 p-4 overflow-y-auto border-y-2 border-violet-500 bg-violet-700">
+        <div class="text-white text-sm font-semibold uppercase">Current area</div>
+        <div>
+          <.user_button :for={user <- @online_users} user={user} online={true} />
+        </div>
+      </div>
+
+      <div class="space-y-4 p-4 overflow-y-auto">
+        <div class="text-white text-sm font-semibold uppercase">Offline users</div>
+        <div>
+          <.user_button :for={user <- @offline_users} user={user} online={false} />
+        </div>
+      </div>
+    </div>
+    """
+  end
+
+  defp control_panel(assigns) do
+    ~H"""
+    <div class="flex items-center justify-between py-3 text-sm">
+      <div class="flex items-center gap-4">
+        <a href="/">
+          <img src={~p"/images/logo.svg"} width="36" />
+        </a>
+        <p class="bg-brand/5 text-brand rounded-full px-2 font-medium leading-6">
+          <%= @current_user.name %>
+        </p>
+      </div>
+      <div class="flex items-center gap-4 font-semibold leading-6 text-zinc-900">
+        <span href="https://twitter.com/elixirphoenix" class="hover:text-zinc-700">
+          Some text
+        </span>
+
+        <a
+          href="https://hexdocs.pm/phoenix/overview.html"
+          class="rounded-lg bg-zinc-100 px-2 py-1 hover:bg-zinc-200/80"
+        >
+          Some action
+        </a>
+      </div>
+    </div>
+    """
+  end
+
+  defp user_button(assigns) do
+    ~H"""
+    <div class={[
+      "flex items-center gap-4 p-2 hover:bg-violet-800 rounded-md",
+      if(@online, do: "cursor-pointer")
+    ]}>
+      <div class="relative">
+        <div class="w-8 h-8 rounded-full bg-slate-500"></div>
+        <div class={[
+          "absolute right-0 bottom-0 w-3 h-3 rounded-full border-2 border-slate-900",
+          if(!@online, do: "bg-slate-300"),
+          if(@online and @user.status == :online, do: "bg-green-500"),
+          if(@online and @user.status == :busy, do: "bg-yellow-500"),
+          if(@online and @user.status == :do_not_disturb, do: "bg-red-500")
+        ]}>
+        </div>
+      </div>
+      <p class="text-sm font-semibold leading-6 text-zinc-100 truncate text-ellipsis">
+        <%= @user.name %>
+      </p>
+    </div>
+    """
   end
 end
