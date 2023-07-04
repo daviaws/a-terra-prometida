@@ -19,7 +19,9 @@ Para iniciar o seu servidor Phoenix:
   * Execute `mix setup` para instalar e configurar as dependências.
   * Inicie o endpoint do Phoenix com `mix phx.server` ou dentro do IEx com `iex -S mix phx.server`.
 
-Agora você pode visitar [`localhost:4000`](http://localhost:4000) no seu navegador.
+Agora você pode visitar [`localhost:4000?username=[NOME_DO_USUÁRIO]`](http://localhost:4000?username=[NOME_DO_USUÁRIO]) no seu navegador.
+
+Basta substituir NOME_DO_USUÁRIO pelo nome do seu usuário e se divertir.
 
 Pronto para executar em produção? Por favor, [verifique nossos guias de implantação](https://hexdocs.pm/phoenix/deployment.html).
 
