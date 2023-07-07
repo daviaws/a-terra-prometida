@@ -88,16 +88,16 @@ COPY --from=builder --chown=nobody:root /app/_build/${MIX_ENV}/rel/app ./
 
 USER nobody
 
+# to run local uncomment the lines below
+# and run `docker build -t atp . && docker run --network=host -it atp`
+# ENV PHX_SERVER=true \
+#     PHX_HOST="localhost" \
+#     DATABASE_URL="postgresql://postgres:postgres@localhost:5432/app_dev" \
+#     SECRET_KEY_BASE="6U5Z097nTCP3sJrXEEu7k2GzvHPs86t0LiBR6jRo9+2AnXI0lrTO41vX4yFYXnuh"
+
 CMD ["/app/bin/server"]
 
-# Appended by flyctl
-ENV ECTO_IPV6 true
-ENV ERL_AFLAGS "-proto_dist inet6_tcp"
-
-# Appended by flyctl
-ENV ECTO_IPV6 true
-ENV ERL_AFLAGS "-proto_dist inet6_tcp"
-
+# to run local comment the lines below
 # Appended by flyctl
 ENV ECTO_IPV6 true
 ENV ERL_AFLAGS "-proto_dist inet6_tcp"
